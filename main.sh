@@ -11,22 +11,26 @@
 # I wish you good work and i hope that the script will help you a bit with the repo configuration and with the ROM build
 
 
-# Don't allow scrollback buffer
-echo -e '\0033\0143'
-clear
+	# Don't allow scrollback buffer
+	echo -e '\0033\0143'
+	clear
 
-# Built-in script colors
-red='tput setaf 1'              # Red
-green='tput setaf 2'            # Green
-yellow='tput setaf 3'           # Yellow
-blue='tput setaf 4'             # Blue
-magenta='tput setaf 5'          # Magenta
-cyan='tput setaf 6'             # Cyan
-white='tput setaf 7'            # White
-txtbld='tput bold '             # Bold
-txtundrline='tput smul '				# Underline
-normal='tput sgr0'
+	# Built-in script colors
+	red='tput setaf 1'              # Red
+	green='tput setaf 2'            # Green
+	yellow='tput setaf 3'           # Yellow
+	blue='tput setaf 4'             # Blue
+	magenta='tput setaf 5'          # Magenta
+	cyan='tput setaf 6'             # Cyan
+	white='tput setaf 7'            # White
+	txtbld='tput bold '             # Bold
+	txtundrline='tput smul '				# Underline
+	normal='tput sgr0'
 
+	#Declare System variables
+	Date=$(date)
+	Computer=$(hostname)
+	User=$USER
 
 function KITCHENSPLASH () {
 
@@ -53,8 +57,11 @@ echo -e "	    	    /        \  \___|  | \/  |  |_> >  |  "
 echo -e "	    	    /_______  /\___  >__|  |__|   __/|__|  "
 echo -e "	    	    	    \/     \/         |__| "
 echo -e ""
+echo -e "			Script started at: $Date"
+echo -e "			Developer: $User"
+echo -e "			HOST: $Computer"
 if [[ -n $romchoose ]];then
-echo -e "							Script is running in a $romchoose sorce  dir	"
+echo -e "			Script is running in a $romchoose source dir	"
 else
 echo -e ""
 fi
@@ -107,5 +114,3 @@ function ROM () {
 					fi
 			fi
 }
-
-ROM
