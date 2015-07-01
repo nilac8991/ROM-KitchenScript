@@ -114,3 +114,101 @@ function ROM () {
 					fi
 			fi
 }
+
+ROM
+
+function PREREPOINIT () {
+
+	cd
+	clear
+	echo -e ">> Initializing Pre Repo stuff.."
+	tput setaf 2
+	mkdir -p ~/bin
+	PATH=~/bin:$PATH
+	if [ -f "repo" ]; then
+		tput setaf 3
+		echo -e "Skipping cause repo is already initialized.."
+
+	else
+		tput setaf 2
+		curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+		chmod a+x ~/bin/repo
+		echo -e ""
+		sleep 1
+	fi
+
+	echo -e ">> Github part!"
+	sleep 2
+	echo -e "Please enter your email for Git config : \c"
+	tput setaf 2
+	read gitemail
+	git config --global user.email $gitemail
+	sleep 2
+	tput setaf 3
+	echo -e "Please enter your name for Git config : \c"
+	tput setaf 2
+	read gituser
+	git config --global user.name $gituser
+	tput setaf 3
+	echo -e ""
+	echo -e "Github part done"
+	sleep 2
+	echo -e ">>	Going to install post dependencies if they are necessary..."
+	sleep 2
+		echo "Checking and installing Post-Dependencies for the build environment"
+		echo "This step is automatically skipped if there already installed"
+
+		tput setaf 2
+		echo "Insert your password:"
+
+			sudo apt-get update
+			sudo apt-get install openjdk-7-jdk -y
+			sudo apt-get install git-core gnupg flex bison gperf libsdl1.2-dev libesd0-dev libwxgtk2.8-dev squashfs-tools build-essential zip curl libncurses5-dev zlib1g-dev openjdk-6-jre openjdk-6-jdk pngcrush schedtool libxml2 libxml2-utils xsltproc lzop libc6-dev schedtool g++-multilib lib32z1-dev lib32ncurses5-dev lib32readline-gplv2-dev gcc-multilib -y
+			sleep 2
+}
+
+function REPOINIT () {
+
+		echo -e "Note."
+		echo -e "All the REPOs are initialized in the User home folder"
+		echo -e "If for any reason you want to change the path do it before repo syncing the sources"
+		sleep 2
+		echo -e "In order to continue, i need to know if it's the first time you build a ROM for a device"
+		echo -e "Inser yes or no"
+		read askfirsttime
+		if [[ $askfirsttime = "Yes" || $askfirsttime = "yes" || $askfirsttime = "YES"]]; then
+			echo -e "Before to continue with the REPO initialization a pre sequence will be launched in a few seconds"
+			sleep 4
+			PREREPOINIT
+		else
+			echo -e "Skipping pre repo init sequence.."
+		fi
+
+		if (test $romchoose = "CyanogenMod"); then
+			echo -e "Going to initialize the ROM sources for the $romchoose ROM"
+
+			#CODE....
+
+		fi
+
+		if (test $romchoose = "SlimRoms"); then
+			echo -e "Going to initialize the ROM sources for the $romchoose ROM"
+
+			#CODE....
+
+		fi
+
+		if (test $romchoose = "BlissPop"); then
+			echo -e "Going to initialize the ROM sources for the $romchoose ROM"
+
+			#CODE....
+
+		fi
+
+		if (test $romchoose = "CarbonROM"); then
+			echo -e "Going to initialize the ROM sources for the $romchoose ROM"
+
+			#CODE....
+
+		fi
+}
