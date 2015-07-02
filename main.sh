@@ -18,7 +18,7 @@
 	# Built-in script colors
 	red='tput setaf 1'              # Red
 	green='tput setaf 2'            # Green
-	yellow='tput setaf 3'           # Yellow
+	orange='tput setaf 3'           # Yellow
 	blue='tput setaf 4'             # Blue
 	magenta='tput setaf 5'          # Magenta
 	cyan='tput setaf 6'             # Cyan
