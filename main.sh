@@ -4,7 +4,7 @@
 
 # NOTE.
 # This script is intended to be written in this way
-# Don't try to modify this on your own cause you may end by messing all the script up
+# Don't try to modify this on your own cause you may end by mess up the entire script
 # If you want features to be addeed or if you are having issues with the script just send me a message:
 # On XDA: nilac8991
 # Or on email: nilac8991@gmail.com
@@ -66,6 +66,7 @@ function Details () {
 	echo -e "			HOST: $Computer"
 	if [[ -n $romchoose ]];then
 		echo -e "			Script is running in a $romchoose source dir	"
+		echo -e "           Script configuration: $mode "
 elif [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" || -f "kitchenscript_SlimRoms.txt" || -f "kitchenscript_CarbonROM" ]]; then
 		if [ -f "kitchenscript_CyanogenMod.txt" ]; then
 			echo -e "			Script is running in a CyanogenMod source dir	"
@@ -354,3 +355,37 @@ if [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" || -
 else
 	ROM
 fi
+
+function CURRENTCONFIG () {
+	echo -e " "
+	echo -e "  NOTE : Some questions will need to be answered in binary inputs (I you will when.)"
+	echo -e "  1 for Yes "
+	echo -e "  0 for No "
+	echo -e ""
+	tput bold
+	tput setaf 6
+	echo -e "============================================================"
+	echo -e ""
+	echo -e " Device target and repo configurations"
+	echo -e ""
+	echo -e " CHERRYPICK = $CHERRYPICK"
+	echo -e " REPO_SYNC_BEFORE_BUILD = $REPO_SYNC_BEFORE_BUILD"
+	echo -e ""
+	echo -e " ROM Build configurations"
+	echo -e ""
+	echo -e " MAKE_APP   = $MAKE_APP"
+	echo -e " MAKE_CLEANINSTAPP = $MAKE_CLEANINSTAPP"
+	echo -e " MAKE_CLEAN = $MAKE_CLEAN"
+	echo -e " MAKE_DIRTY = $MAKE_DIRTY"
+	echo -e ""
+	echo -e "============================================================"
+	echo -e ""
+	tput sgr0
+	tput setaf 2
+	if [[ $MAKE_CLEAN != "0" || $REPO_SYNC_BEFORE_BUILD != "1" || $CHERRYPICK != "0" || $MAKE_DIRTY != "1" || $MAKE_APP != "0" || $MAKE_CLEANINSTAPP != "0" ]]; then
+		echo -e ""
+		mode=Custom
+	else
+		mode=Default
+	fi
+}
