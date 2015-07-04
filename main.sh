@@ -69,12 +69,16 @@ function Details () {
 elif [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" || -f "kitchenscript_SlimRoms.txt" || -f "kitchenscript_CarbonROM" ]]; then
 		if [ -f "kitchenscript_CyanogenMod.txt" ]; then
 			echo -e "			Script is running in a CyanogenMod source dir	"
+			romchoose='CyanogenMod'
 		elif [ -f "kitchenscript_CarbonROM.txt" ]; then
 			echo -e "			Script is running in a CarbonROM source dir	"
+			romchoose= 'CarbonROM'
 		elif [ -f "kitchenscript_SlimRoms.txt" ]; then
 			echo -e "			Script is running in a SlimROM source dir	"
+			romchoose= 'SlimROM'
 		elif [ -f "kitchenscript_BlissPop.txt" ]; then
 			echo -e "			Script is running in a BlissPop source dir	"
+			romchoose= 'BlissPop'
 		fi
 	else
 	echo -e ""
@@ -376,11 +380,11 @@ function CURRENTCONFIG () {
 	echo -e " Device target and repo configurations"
 	echo -e ""
 	tput sgr0
-	if [[ -n $TARGET_PRODUCT1 ]]; then
+	if [[ $CHERRYPICK1 = "1" && -n $TARGET_PRODUCT1 ]]; then
 	echo -e " CHERRYPICK1 = $CHERRYPICK1"  "for $TARGET_PRODUCT1"
-	elif [[ -n $TARGET_PRODUCT2 ]]; then
+	elif [[ $CHERRYPICK2 = "1" && -n $TARGET_PRODUCT2 ]]; then
 	echo -e " CHERRYPICK2 = $CHERRYPICK2"  "for $TARGET_PRODUCT2"
-	elif [[ -n $TARGET_PRODUCT1 && -n $TARGET_PRODUCT2 ]]; then
+  elif [[ $CHERRYPICK1 = "1" && -n $TARGET_PRODUCT1 && $CHERRYPICK2 = "1" && -n $TARGET_PRODUCT2 ]]; then
 	echo -e " CHERRYPICK1 = $CHERRYPICK1"  "for $TARGET_PRODUCT1"
 	echo -e " CHERRYPICK2 = $CHERRYPICK2"  "for $TARGET_PRODUCT2"
 	else
@@ -414,7 +418,7 @@ function DISPLAYMAINMENU() {
 	if [[ -n $TARGET_PRODUCT1 || -n $TARGET_PRODUCT2 ]]; then
 		echo -e "  *************************************"
 		echo -e "	  1 TARGET_PRODUCT: $TARGET_PRODUCT1   "
-		echo -e "   2 TARGET_PRODUCT: $TARGET_PRODUCT2  "
+		echo -e "   	  2 TARGET_PRODUCT: $TARGET_PRODUCT2  "
 		echo -e "  *************************************"
 	fi
 	CURRENTCONFIG
@@ -614,6 +618,140 @@ fi
 	fi
 	$blue
 }
+
+function DEVICETARGET () {
+	clear
+	tput sgr0
+	tput setaf 4
+	echo -e "Initializing the build environment"
+	source build/./envsetup.sh
+	cd .repo/local_manifests
+	if [ -f "roomservice.xml" ]; then
+	rm -f roomservice.xml
+	fi
+	cd ..
+	cd ..
+	clear
+	KITCHENSPLASH
+	tput setaf 4
+	echo -e ""
+	echo -e ""
+	echo -e "NOTE.
+	Here you will need to choose the device you will gonna build for, it is not 100% guaranteed that your device is an Official one
+	So if for any reason the Breakfast command fail, the reason could even be this one
+	So if the device is not an official one you will need to modify the local_manifest, don't worry if the Breakfast fails we will open it for you
+	Now press enter when you are ready:
+	If you don't know how to add an unofficial device to the ROM sources dir then check out this guide on XDA:
+	http://forum.xda-developers.com/showpost.php?p=54118631&postcount=4"
+	read blank
+	sleep 2
+	echo -e "Are you gonna build for two devices?"
+	echo -e "Insert 1 or 0"
+	read twodeviceask
+	if [[ $twodeviceask = "1" ]]; then
+		echo -e "Insert the codename for the first target device"
+		$green
+		read TARGET_PRODUCT1
+		$blue
+		echo -e "Insert the codename for the second target device"
+		$green
+		read TARGET_PRODUCT2
+		echo -e ""
+		sleep 2
+		tput setaf 4
+		echo -e "Going to make Breakfast for $TARGET_PRODUCT1 and $TARGET_PRODUCT2 devices"
+		$orange
+		if breakfast $TARGET_PRODUCT1 && breakfast $TARGET_PRODUCT2; then
+			clear
+		$blue
+			echo -e "Breakfast completed, ROM build is set now for the $TARGET_PRODUCT1 device and for the $TARGET_PRODUCT2 device"
+		else
+			$blue
+			echo -e ""
+			echo -e "Switching to unofficial target mode"
+			echo -e "Opps something went wrong with one of the target devices, do you want to open the local manifest "
+			echo -e "Insert 1 or 0"
+			read asklocal
+			if [[ $asklocal = "1" ]]; then
+				cd .repo
+				mkdir -p local_manifests
+				cd local_manifests
+				nano local_manifest.xml
+				cd ..
+				cd ..
+				tput setaf 4
+				echo -e "Press enter when you are ready"
+				echo -e "local_mainfest changed! Going to repo sync..."
+				repo sync
+				clear
+				else
+					echo -e "Going back to the main menu while you are fixing your issues..."
+			fi
+		fi
+	else
+		echo -e "Insert the codename of the device which you will gonna build for:"
+		tput setaf 2
+		read TARGET_PRODUCT1
+		tput setaf 4
+		echo -e "Going to make Breakfast for the $TARGET_PRODUCT1 device"
+		$orange
+		if breakfast $TARGET_PRODUCT1; then
+			clear
+			$blue
+			echo -e "Breakfast completed, ROM build is set now for the $TARGET_PRODUCT1 device"
+		else
+			$blue
+			echo -e ""
+			echo -e "Switching to unofficial target mode"
+			echo -e "Opps something went wrong with the target device, do you want to open the local manifest "
+			echo -e "Insert 1 or 0"
+			read asklocal
+			if [[ $asklocal = "1" ]]; then
+				cd .repo
+				mkdir -p local_manifests
+				cd local_manifests
+				nano local_manifest.xml
+				cd ..
+				cd ..
+				tput setaf 4
+				echo -e "Press enter when you are ready"
+				echo -e "local_mainfest changed! Going to repo sync..."
+				repo sync
+				clear
+				else
+					echo -e "Going back to the main menu while you are fixing your issues..."
+				fi
+			fi
+		fi
+	tput sgr0
+}
+
+function KITCHCONFIG {
+	# Red
+	tput setaf 1
+	tput bold
+
+	echo -e "  Loading defaults..\n"
+
+	mode=Default
+
+	tput sgr0
+	tput setaf 1
+
+
+	MAKE_CLEAN=0
+	MAKE_CLEANINSTAPP=0
+	MAKE_DIRTY=0
+	REPO_SYNC_BEFORE_BUILD=1
+	MAKE_APP=0
+	BUILD_ENV_SETUP=0
+	CHERRYPICK1=0
+	CHERRYPICK2=0
+
+	return
+}
+
+	KITCHCONFIG
 
 while [[ true ]]; do
 	KITCHENSPLASH
