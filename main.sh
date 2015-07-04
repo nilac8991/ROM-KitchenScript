@@ -80,13 +80,103 @@ elif [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" ||
 	else
 	echo -e ""
 	fi
-
+	echo -e ""
+	echo -e ""
+	echo -e "Script is loading...."
+	sleep 5
 }
 
-#while [[ true ]]; do
+function CURRENTCONFIG () {
+	$orange
+	echo -e " "
+	echo -e "  NOTE : Some questions will need to be answered in binary inputs (I you will when.)"
+	echo -e "  1 for Yes "
+	echo -e "  0 for No "
+	echo -e ""
+	tput bold
+	tput sgr0
+	echo -e "============================================================"
+	echo -e ""
+	$blue
+	echo -e " Device target and repo configurations"
+	echo -e ""
+	tput sgr0
+	echo -e " CHERRYPICK = $CHERRYPICK"
+	echo -e " REPO_SYNC_BEFORE_BUILD = $REPO_SYNC_BEFORE_BUILD"
+	echo -e ""
+	$blue
+	echo -e " ROM Build configurations"
+	echo -e ""
+	tput sgr0
+	echo -e " MAKE_APP   = $MAKE_APP"
+	echo -e " MAKE_CLEANINSTAPP = $MAKE_CLEANINSTAPP"
+	echo -e " MAKE_CLEAN = $MAKE_CLEAN"
+	echo -e " MAKE_DIRTY = $MAKE_DIRTY"
+	echo -e ""
+	echo -e "============================================================"
+	echo -e ""
+	tput sgr0
+	tput setaf 2
+	if [[ $MAKE_CLEAN != "0" || $REPO_SYNC_BEFORE_BUILD != "1" || $CHERRYPICK != "0" || $MAKE_DIRTY != "1" || $MAKE_APP != "0" || $MAKE_CLEANINSTAPP != "0" ]]; then
+		echo -e ""
+		mode=Custom
+	else
+		mode=Default
+	fi
+}
+
+function DISPLAYMAINMENU() {
+	clear
+	if [[ -n $TARGET_PRODUCT1 || -n $TARGET_PRODUCT2 ]]; then
+		echo -e "  *************************************"
+		echo -e "	1 TARGET_PRODUCT: $TARGET_PRODUCT1   "
+		echo -e "   2 TARGET_PRODUCT: $TARGET_PRODUCT2  "
+		echo -e "  *************************************"
+	fi
+	CURRENTCONFIG
+	echo -e "  1. Sync the ROM Repo"
+	echo -e "  2. Configure repo and build parameters"
+	echo -e "  2a. Reset All configurations"
+		echo -e "  3. Set-up the Target device/s"
+		if [[ -n $TARGET_PRODUCT1 || -n $TARGET_PRODUCT2 ]]; then
+			echo -e "  4. Configure Cherry-pick script"
+		if [[ -n $TARGET_PRODUCT1 ]]; then
+			echo -e "  5. Build $romchoose for $TARGET_PRODUCT1"
+		elif [[ -n $TARGET_PRODUCT2 ]]; then
+			echo -e "  5. Build $romchoose for $TARGET_PRODUCT2"
+		else
+			echo -e "  5. Build $romchoose for $TARGET_PRODUCT1 and $TARGET_PRODUCT2"
+		fi
+	fi
+	echo -e "  6. Exit"
+	echo -e ""
+	echo -e "Enter your choice: \c"
+	read mainMenuChoice
+	PROCESSMENU $mainMenuChoice
+}
+
+function PROCESSMENU () {
+	case $mainMenuChoice in
+		1) SYNCREPO ;;
+		2) CONFIGUREBUILD ;;
+		2a) KITCHCONFIG ;;
+		3) DEVICETARGET;;
+		4) CHERRYPICK;;
+		5) BUILD ;;
+		6) ROMSWITCH ;;
+		7) exit 0;;
+		*) echo "  Invalid Option! ERROR!" ;;
+	esac
+	echo -e " Press any key to continue..."
+	read blank
+	clear
+}
+
+while [[ true ]]; do
 	KITCHENSPLASH
 	Details
-#done
+	DISPLAYMAINMENU
+done
 
 function PREREPOINIT () {
 
@@ -355,37 +445,3 @@ if [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" || -
 else
 	ROM
 fi
-
-function CURRENTCONFIG () {
-	echo -e " "
-	echo -e "  NOTE : Some questions will need to be answered in binary inputs (I you will when.)"
-	echo -e "  1 for Yes "
-	echo -e "  0 for No "
-	echo -e ""
-	tput bold
-	tput setaf 6
-	echo -e "============================================================"
-	echo -e ""
-	echo -e " Device target and repo configurations"
-	echo -e ""
-	echo -e " CHERRYPICK = $CHERRYPICK"
-	echo -e " REPO_SYNC_BEFORE_BUILD = $REPO_SYNC_BEFORE_BUILD"
-	echo -e ""
-	echo -e " ROM Build configurations"
-	echo -e ""
-	echo -e " MAKE_APP   = $MAKE_APP"
-	echo -e " MAKE_CLEANINSTAPP = $MAKE_CLEANINSTAPP"
-	echo -e " MAKE_CLEAN = $MAKE_CLEAN"
-	echo -e " MAKE_DIRTY = $MAKE_DIRTY"
-	echo -e ""
-	echo -e "============================================================"
-	echo -e ""
-	tput sgr0
-	tput setaf 2
-	if [[ $MAKE_CLEAN != "0" || $REPO_SYNC_BEFORE_BUILD != "1" || $CHERRYPICK != "0" || $MAKE_DIRTY != "1" || $MAKE_APP != "0" || $MAKE_CLEANINSTAPP != "0" ]]; then
-		echo -e ""
-		mode=Custom
-	else
-		mode=Default
-	fi
-}
