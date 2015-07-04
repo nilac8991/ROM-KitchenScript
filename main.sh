@@ -369,7 +369,8 @@ function CURRENTCONFIG () {
 	echo -e " Device target and repo configurations"
 	echo -e ""
 	tput sgr0
-	echo -e " CHERRYPICK = $CHERRYPICK"
+	echo -e " CHERRYPICK1 = $CHERRYPICK1"  "for $TARGET_PRODUCT1"
+	echo -e " CHERRYPICK2 = $CHERRYPICK2"  "for $TARGET_PRODUCT2"
 	echo -e " REPO_SYNC_BEFORE_BUILD = $REPO_SYNC_BEFORE_BUILD"
 	echo -e ""
 	$blue
@@ -385,7 +386,7 @@ function CURRENTCONFIG () {
 	echo -e ""
 	tput sgr0
 	tput setaf 2
-	if [[ $MAKE_CLEAN != "0" || $REPO_SYNC_BEFORE_BUILD != "1" || $CHERRYPICK != "0" || $MAKE_DIRTY != "1" || $MAKE_APP != "0" || $MAKE_CLEANINSTAPP != "0" ]]; then
+	if [[ $MAKE_CLEAN != "0" || $REPO_SYNC_BEFORE_BUILD != "1" || $CHERRYPICK1 != "0" || $CHERRYPICK2 != "0" || $MAKE_DIRTY != "1" || $MAKE_APP != "0" || $MAKE_CLEANINSTAPP != "0" ]]; then
 		echo -e ""
 		mode=Custom
 	else
@@ -439,6 +440,147 @@ function PROCESSMENU () {
 	echo -e " Press any key to continue..."
 	read blank
 	clear
+}
+
+function CONFIGUREBUILD () {
+	clear
+	IOMAINSPLASH
+	tput setaf 3
+	echo -e "Begining to edit the default repo and build options."
+	echo -e "      "
+	echo -e "     | Submit values in binary bits"
+	echo -e "     | 1 for Yes, and 0 for No"
+	echo -e ""
+	echo -e "Make app instead of build the ROM?"
+	echo -e " When Make app is activated instead of building the ROM for a target device the environment will build a single app for a specified target"
+	tput setaf 2
+	read MAKE_APP
+	if [[ "$MAKE_APP" == 0 || "$MAKE_APP" == 1 ]]; then
+		echo -e ""
+	else
+	tput setaf 3
+	echo -e ""
+	echo -e "ERROR! Wrong parameters passed. Reconfigure"
+	CONFIGUREBUILD
+	fi
+
+	tput setaf 3
+	if (test $MAKE_CLEAN = "1" || test $MAKE_APP = "1"); then
+		echo -e "Skipping Make InstallClean because Make clean or Make App is activated so it's unuseful"
+	else
+	echo -e "Make clean before starting the build?"
+	echo -e "	Make clean will delete all the containing files contained in the OUT folder, in order to make a clean build : \c"
+	tput setaf 2
+	read MAKE_CLEAN
+	if [[ "$MAKE_CLEAN" == 0 || "$MAKE_CLEAN" == 1 ]]; then
+		echo -e ""
+	else
+	tput setaf 3
+	echo ""
+	echo -e "ERROR! Wrong parameters passed. Reconfigure"
+	CONFIGUREBUILD
+	fi
+
+	tput setaf 3
+	if (test $MAKE_CLEAN = "1" || test $MAKE_APP = "1"); then
+		echo -e "Skipping Make InstallClean because Make clean or Make App is activated so it's unuseful"
+	else
+	echo -e "Make Cleaninstapp before starting the build?"
+	echo -e "	Make Install app will delete just the intermediates stuff of Apps intermediates like classes in order to build them again and optimize them better: \c"
+	tput setaf 2
+	read MAKE_CLEANINSTAPP
+	if [[ $MAKE_CLEANINSTAPP == 0 || $MAKE_CLEANINSTAPP == 1 ]]; then
+		echo -e ""
+	else
+	echo -e ""
+	tput setaf 3
+	echo -e "ERROR! Wrong parameters passed. Reconfigure"
+	CONFIGUREBUILD
+	fi
+fi
+	tput setaf 3
+	if (test $MAKE_CLEAN = "1"); then
+		echo -e "Skipping Make dirty because Make clean is activated so it's unuseful"
+		echo -e ""
+	else
+	echo -e "Make Dirty before starting the build?"
+	echo -e "	Make Dirty will delete the previous build zip, build.prop,changelog and md5sum in order to regenerate them : \c"
+	tput setaf 2
+	read MAKE_DIRTY
+	if [[ $MAKE_DIRTY == 0 || $MAKE_DIRTY == 1 ]]; then
+		echo -e ""
+	else
+	tput setaf 3
+	echo -e "ERROR! Wrong parameters passed. Reconfigure"
+	CONFIGUREBUILD
+	fi
+fi
+
+	tput setaf 3
+	echo -e "Repo sync before starting the build?"
+	echo -e "	Repo sync will automatically be launched before the build starts : \c"
+	tput setaf 2
+	read REPO_SYNC_BEFORE_BUILD
+	if [[ $REPO_SYNC_BEFORE_BUILD == 0 || $REPO_SYNC_BEFORE_BUILD == 1 ]]; then
+		echo -e ""
+		fi
+	tput setaf 3
+	else
+	echo -e "ERROR! Wrong parameters passed. Reconfigure"
+	CONFIGUREBUILD
+	fi
+
+	tput setaf 3
+	if (test $MAKE_APP = "1"); then
+		echo -e "Skipping Make InstallClean because Make App is activated so it's unuseful"
+	else
+	if [[ -f "cherry_$TARGET_PRODUCT1.sh" && -f "cherry_$TARGET_PRODUCT2.sh" && -n $TARGET_PRODUCT1 && -n $TARGET_PRODUCT2 ]]; then
+		echo -e ""
+		echo -e "Use cherry-pick script before starting the build for both the target product devices? : \c"
+		tput setaf 2
+		read cherryask
+		if [[ $cherryask = "NO" || $cherryask = "no" || $cherryask = "No" || $cherryask = "0" ]]; then
+			echo -e "For which target product do you want to launch Cherry script?"
+			echo -e "Insert 1 for $TARGET_PRODUCT1"
+			echo -e "Insert 2 for $TARGET_PRODUCT2"
+			read cherryask2
+			if (test cherryask2 = "1"); then
+				echo -e "Cherry pick script will be runned for the $TARGET_PRODUCT1 at build time"
+				$CHERRYPICK1= 1
+			else
+				echo -e "Cherry pick script will be runned for the $TARGET_PRODUCT2 at build time"
+				$CHERRYPICK2= 1
+			fi
+		else
+			$CHERRYPICK1= 1
+			$CHERRYPICK2= 1
+		fi
+	elif [[ -f "cherry_$TARGET_PRODUCT1.sh" && -n $TARGET_PRODUCT1 ]]; then
+			echo -e "Run cherry script for $TARGET_PRODUCT1 before the build?"
+			read CHERRYPICK1
+			if [[ $CHERRYPICK1 == 0 || $CHERRYPICK1 == 1 ]]; then
+			echo -e ""
+			tput setaf 3
+			else
+			echo -e " ERROR! Wrong parameters passed. Reconfigure"
+			CONFIGUREBUILD
+			fi
+		elif [[ -f "cherry_$TARGET_PRODUCT2.sh" && -n $TARGET_PRODUCT2 ]]; then
+					echo -e "Run cherry script for $TARGET_PRODUCT2 before the build?"
+					read CHERRYPICK1
+					if [[ $CHERRYPICK2 == 0 || $CHERRYPICK2 == 1 ]]; then
+					echo -e ""
+					tput setaf 3
+					else
+					echo -e " ERROR! Wrong parameters passed. Reconfigure"
+					CONFIGUREBUILD
+					fi
+		else
+		tput setaf 3
+		echo -e "Sorry but no cherry pick script was found for both devices, try maybe to reconfigure the cherry script and come back here after"
+		fi
+	fi
+
 }
 
 while [[ true ]]; do
