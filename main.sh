@@ -735,7 +735,7 @@ function DEVICETARGET () {
 
 function CHERRYPICK() {
 	clear
-	IOMAINSPLASH
+	KITCHENSPLASH
 	tput setaf bold
 	tput setaf 3
 	echo -e "Introduction:"
