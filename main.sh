@@ -308,12 +308,6 @@ function ROM () {
 		clear
 		KITCHENSPLASH
 		echo -e ""
-		echo -e "Welcome! the script detected that it isn't located in any ROM sources dir"
-		echo -e "So in order you will need to choose one of the supported ROMs by the script:"
-		echo -e "Press any key to continue"
-		read blank
-		clear
-		echo -e ""
 		echo -e "CyanogenMod"
 		echo -e "SlimRoms"
 		echo -e "BlissPop"
@@ -362,6 +356,12 @@ function ROM () {
 if [[ -f "kitchenscript_CyanogenMod.txt" || -f "kitchenscript_BlissPop.txt" || -f "kitchenscript_SlimRoms.txt" || -f "kitchenscript_CarbonROM" ]]; then
 	echo -e ""
 else
+	echo -e ""
+	echo -e "Welcome! the script detected that it isn't located in any ROM sources dir"
+	echo -e "So in order you will need to choose one of the supported ROMs by the script:"
+	echo -e "Press any key to continue"
+	read blank
+	clears
 	ROM
 fi
 
@@ -783,6 +783,23 @@ function CHERRYPICK() {
 		sleep 2
 		nano cherry_$TARGET_PRODUCT1
 	fi
+}
+
+function ROMSWITCH () {
+
+	clear
+	KITCHENSPLASH
+	echo -e ""
+	$blue
+	echo -e "Going to redirect you to the ROM initialization function in no time!
+	Remember that all the ROMs will gonna be initialized in a folder made by you in the home folder
+	So if you are gonna need to move that folder, do it after the initialization is done and don't of course repo sync the ROM sources
+	Cause it will take much more time to move all the files after."
+	sleep 2
+	echo -e "Press enter to continue"
+	read blank
+	cd
+	ROM
 }
 
 function KITCHCONFIG {
