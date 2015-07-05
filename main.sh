@@ -575,16 +575,19 @@ fi
 		echo -e "Use cherry-pick script before starting the build for both the target product devices? : \c"
 		tput setaf 2
 		read cherryask
+		$orange
 		if [[ $cherryask = "NO" || $cherryask = "no" || $cherryask = "No" || $cherryask = "0" ]]; then
-			echo -e "For which target product do you want to launch Cherry script?"
+			echo -e "For which target product do you want to launch Cherry script? \c"
 			echo -e "Insert 1 for $TARGET_PRODUCT1"
 			echo -e "Insert 2 for $TARGET_PRODUCT2"
+			$green
 			read cherryask2
+			$orange
 		if (test cherryask2 = "1"); then
-				echo -e "Cherry pick script will be runned for the $TARGET_PRODUCT1 at build time"
+				echo -e " Cherry pick script will be runned for the $TARGET_PRODUCT1 at build time"
 				$CHERRYPICK1= 1
 		else
-				echo -e "Cherry pick script will be runned for the $TARGET_PRODUCT2 at build time"
+				echo -e " Cherry pick script will be runned for the $TARGET_PRODUCT2 at build time"
 				$CHERRYPICK2= 1
 			fi
 		else
@@ -592,8 +595,10 @@ fi
 			$CHERRYPICK2= 1
 		fi
 	elif [[ -f "cherry_$TARGET_PRODUCT1.sh" && -n $TARGET_PRODUCT1 ]]; then
-			echo -e "Run cherry script for $TARGET_PRODUCT1 before the build?"
+			echo -e "Run cherry script for $TARGET_PRODUCT1 before the build? \c"
+			$green
 			read CHERRYPICK1
+			echo -e " Cherry pick script will be runned for the $TARGET_PRODUCT1 at build time"
 			if [[ $CHERRYPICK1 == 0 || $CHERRYPICK1 == 1 ]]; then
 			echo -e ""
 			tput setaf 3
@@ -602,8 +607,10 @@ fi
 			CONFIGUREBUILD
 			fi
 	elif [[ -f "cherry_$TARGET_PRODUCT2.sh" && -n $TARGET_PRODUCT2 ]]; then
-					echo -e "Run cherry script for $TARGET_PRODUCT2 before the build?"
+					echo -e "Run cherry script for $TARGET_PRODUCT2 before the build? \c"
+					$green
 					read CHERRYPICK1
+					echo -e " Cherry pick script will be runned for the $TARGET_PRODUCT1 at build time"
 					if [[ $CHERRYPICK2 == 0 || $CHERRYPICK2 == 1 ]]; then
 					echo -e ""
 					tput setaf 3
@@ -613,7 +620,7 @@ fi
 					fi
 	else
 		tput setaf 3
-		echo -e "Sorry but no cherry pick script was found for both devices, try maybe to reconfigure the cherry script and come back here after"
+		echo -e "Sorry but no cherry pick script was found, try maybe to reconfigure the cherry script and come back here after"
 		fi
 	fi
 	$blue
@@ -724,6 +731,58 @@ function DEVICETARGET () {
 			fi
 		fi
 	tput sgr0
+}
+
+function CHERRYPICK() {
+	clear
+	IOMAINSPLASH
+	tput setaf bold
+	tput setaf 3
+	echo -e "Introduction:"
+	sleep 2
+	tput setaf 2
+	echo -e ""
+	echo -e "Basically this script will be made separately for each device
+	This script will be used for the developers who will need to cherry pick some propietary stuff for the device in order to compile the ROM
+	To don't repeat this every time, it's better to generate a script and run it every time you make a new build for the device
+	If you don't know how to cherry-pick then take a look to this guide on XDA:
+	http://forum.xda-developers.com/showthread.php?t=2763236:)"
+	echo -e ""
+	tput setaf 3
+	echo -e "Press enter when you are ready"
+	read blank
+	if [[ -n $TARGET_PRODUCT1 && -n $TARGET_PRODUCT2 ]]; then
+		echo -e "You are currently building for $TARGET_PRODUCT and $TARGET_PRODUCT2"
+		sleep 2
+		echo -e "Do you want to generate cherry-pick script for both devices?"
+		echo -e "Insert 1 or 0"
+		read twodeviceask
+		if [[ $twodeviceask = "1" ]]; then
+			echo -e "Going to genarate an empty cherry_$TARGET_PRODUCT1.sh"
+			sleep 2
+			nano cherry_$TARGET_PRODUCT1
+			echo -e "Going to genarate an empty cherry_$TARGET_PRODUCT2.sh"
+			sleep 2
+			nano cherry_$TARGET_PRODUCT2
+		else
+			echo -e "Choose for which device are you going to create a cherry-script"
+			echo -e "Insert 1 for $TARGET_PRODUCT1"
+			echo -e "Insert 2 for $TARGET_PRODUCT2"
+			echo -e "Insert 0 for exit"
+			read cherryask3
+			if [[ $cherryask3 = "1" ]]; then
+				nano cherry_$TARGET_PRODUCT1
+			elif [[ $cherryask3 = "2" ]]; then
+				nano cherry_$TARGET_PRODUCT2
+			else
+				"Going back to the main menu...."
+			fi
+		fi
+	else
+		echo -e "Going to genarate an empty cherry_$TARGET_PRODUCT1.sh"
+		sleep 2
+		nano cherry_$TARGET_PRODUCT1
+	fi
 }
 
 function KITCHCONFIG {
